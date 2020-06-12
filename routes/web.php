@@ -14,4 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', "UploadController@index");
+Route::get('/files', function(){
+    return view('selectmultifile');
+});
+Route::post('/filess', "UploadController@storeFiles")->name('storeFiles');
 Route::delete('/images/{imageUpload}', "UploadController@destroy")->name('destroy');

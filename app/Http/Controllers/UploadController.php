@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ImageUpload;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
-use Intervention\Image\Facades\Image;
+use App\Http\Traits\ImageUploadTrait;
 
 class UploadController extends Controller
 {
@@ -16,6 +13,10 @@ class UploadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    use ImageUploadTrait;
+
+    
+
     public function index()
     {
         $images= ImageUpload::latest()->get();
@@ -40,29 +41,7 @@ class UploadController extends Controller
      */
     public function store(Request $request)
     {
-        if(!is_dir(public_path('/images')))
-        {
-            mkdir(\public_path('/images'),0777);
-        }
-        $images= Collection::wrap($request->file('file'));
-        $images->each(function($image){
-            $basename=Str::random(5);
-
-            $original= $basename.'.'.$image->getClientOriginalExtension();
-            $thumbnail= $basename.'_thumb.'.$image->getClientOriginalExtension();
-             
-            Image::make($image)
-            ->fit(250,250)
-            ->save(public_path('/images/'.$thumbnail));
-         
-           $image->move(public_path('/images'),$original);
-            ImageUpload::create([
-                'original'=>'/images/'.$original,
-                'thumbnail'=>'/images/'.$thumbnail
-            ]);
-        });
-
-
+        $this->storeImage($request);
     }
 
     /**
@@ -71,9 +50,10 @@ class UploadController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function storeFiles(Request $request)
     {
-        //
+        $images= $this->storeImage($request);
+       return \redirect('/');
     }
 
     /**
