@@ -13,6 +13,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', "UploadController@index");
+Route::delete('/images/{imageUpload}', "UploadController@destroy")->name('destroy');
